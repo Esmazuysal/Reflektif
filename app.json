@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Reflektif",
+    "slug": "reflektif",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A3A3A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kocaeli.reflektif"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1A3A3A"
+      },
+      "package": "com.kocaeli.reflektif"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import {
+  useFonts,
+  Fraunces_600SemiBold,
+  Fraunces_700Bold,
+} from '@expo-google-fonts/fraunces';
+import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { RootNavigator } from './src/navigation/RootNavigator';
+import { DataProvider } from './src/context/DataContext';
+import { colors } from './src/theme/colors';
+
+export default function App() {
+  const [fontsLoaded] = useFonts({
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
+  });
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (fontsLoaded) setReady(true);
+  }, [fontsLoaded]);
+
+  if (!ready) {
+    return (
+      <View style={styles.boot}>
+        <Text style={styles.bootBrand}>Reflektif</Text>
+        <ActivityIndicator color={colors.accent} style={{ marginTop: 16 }} />
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaProvider>
+      <StatusBar style="light" />
+      <DataProvider>
+        <RootNavigator />
+      </DataProvider>
+    </SafeAreaProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  boot: {
+    flex: 1,
+    backgroundColor: colors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bootBrand: {
+    fontSize: 36,
+    color: colors.mist,
+    fontWeight: '700',
+    letterSpacing: -1,
+  },
+});
