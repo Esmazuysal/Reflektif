@@ -1,20 +1,20 @@
 export const colors = {
-  bg: '#0F2A2A',
-  bgSoft: '#163636',
-  surface: '#1F4545',
-  surfaceElevated: '#275555',
-  mist: '#E8F2F0',
-  mistMuted: '#B7CFCA',
-  text: '#F4F7F6',
-  textMuted: '#9BB5B0',
-  accent: '#E8C498',
-  accentDeep: '#C9925A',
-  success: '#6FBF9A',
-  warning: '#E0B35A',
-  danger: '#E07A6F',
-  heart: '#E07A6F',
-  map: '#5BA8A0',
-  border: 'rgba(232, 242, 240, 0.12)',
+  bg: '#14181F',
+  bgSoft: '#1C222C',
+  surface: '#242B36',
+  surfaceElevated: '#2C3542',
+  mist: '#EEF1F4',
+  mistMuted: '#A7B0BC',
+  text: '#F2F4F7',
+  textMuted: '#8B95A3',
+  accent: '#4F9D8A',
+  accentDeep: '#3A7A6B',
+  success: '#5DAF8A',
+  warning: '#D4A04A',
+  danger: '#D4655C',
+  heart: '#D4655C',
+  map: '#4F9D8A',
+  border: 'rgba(242, 244, 247, 0.10)',
 };
 
 export const spacing = {
@@ -27,8 +27,16 @@ export const spacing = {
 };
 
 export const radius = {
-  sm: 12,
-  md: 18,
-  lg: 28,
+  sm: 10,
+  md: 14,
+  lg: 20,
   pill: 999,
+};
+
+/** Okunabilir, Alzheimer dostu — Fraunces/DM Sans yerine Lexend */
+export const fonts = {
+  regular: 'Lexend_400Regular',
+  medium: 'Lexend_500Medium',
+  semibold: 'Lexend_600SemiBold',
+  bold: 'Lexend_700Bold',
 };

@@ -3,6 +3,10 @@ api/Reflektif.Api/bin/
 api/Reflektif.Api/obj/
 api/Reflektif.Api/reflektif.db
 api/Reflektif.Api/reflektif.db-*
+api/Reflektif.Api/reflektif*.db
+api/Reflektif.Api/reflektif*.db-*
+api/Reflektif.Api/*.db-shm
+api/Reflektif.Api/*.db-wal
 node_modules/
 .expo/
 dist/

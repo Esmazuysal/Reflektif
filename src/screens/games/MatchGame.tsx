@@ -111,17 +111,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   score: {
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 15,
     color: colors.text,
   },
   done: {
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 15,
     color: colors.success,
   },
   hint: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 14,
     color: colors.textMuted,
   },

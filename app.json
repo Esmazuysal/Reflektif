@@ -10,10 +10,16 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1A3A3A"
+      "backgroundColor": "#14181F"
     },
     "plugins": [
-      "expo-dev-client"
+      "expo-dev-client",
+      [
+        "expo-notifications",
+        {
+          "color": "#4F9D8A"
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true,

@@ -5,16 +5,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing } from '../theme/colors';
 import { Panel, PrimaryButton, SectionTitle } from '../components/ui';
 import { SafeZoneMap } from '../components/SafeZoneMap';
+import { AlarmBanner } from '../components/AlarmBanner';
 import { useData } from '../context/DataContext';
+import { useEmergency } from '../context/EmergencyContext';
 
 export function LocationScreen() {
-  const { patient } = useData();
+  const { patient, refresh } = useData();
+  const { simulateSafeZoneExit } = useEmergency();
   const zone = patient?.safeZone;
 
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={['#0F2A2A', '#143434']}
+        colors={['#14181F', '#1A222C']}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -24,8 +27,10 @@ export function LocationScreen() {
         >
           <SectionTitle
             title="Güvenli alan"
-            subtitle="Alan dışına çıkışta yakınlara anlık bildirim"
+            subtitle="Alan dışına çıkışta acil kişilere uyarı tetiklenir"
           />
+
+          <AlarmBanner />
 
           {!patient ? (
             <Panel>
@@ -53,15 +58,20 @@ export function LocationScreen() {
               </Panel>
 
               <Panel style={{ marginTop: spacing.sm }}>
-                <Text style={styles.rowLabel}>Alan ve GPS Ayarları</Text>
+                <Text style={styles.rowLabel}>Alan</Text>
                 <Text style={styles.rowValue}>{zone?.name}</Text>
                 <Text style={styles.hint}>
-                  Yarıçap: {zone?.radiusMeters ?? 400} metre. Xiaomi Watch S4 dahili GPS çipi ve telefon konum servisi ile hastanın güvenli alan içinde kalıp kalmadığı sürekli denetlenmektedir.
+                  Yarıçap {zone?.radiusMeters ?? 400} m. Çıkışta alarm + yerel
+                  bildirim + yakına bildirim kaydı oluşur.
                 </Text>
               </Panel>
 
               <PrimaryButton
-                label="Güvenli alanı düzenle (yakında)"
+                label="Alan dışı alarmını test et"
+                onPress={async () => {
+                  await simulateSafeZoneExit();
+                  await refresh();
+                }}
                 style={{ marginTop: spacing.md }}
               />
             </>
@@ -81,25 +91,25 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   rowLabel: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.textMuted,
   },
   rowValue: {
     marginTop: 4,
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 20,
     color: colors.text,
   },
   coords: {
     marginTop: 4,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     color: colors.accent,
   },
   hint: {
     marginTop: 8,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     lineHeight: 20,
     color: colors.textMuted,

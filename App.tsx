@@ -3,26 +3,23 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
-  Fraunces_600SemiBold,
-  Fraunces_700Bold,
-} from '@expo-google-fonts/fraunces';
-import {
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans';
+  Lexend_400Regular,
+  Lexend_500Medium,
+  Lexend_600SemiBold,
+  Lexend_700Bold,
+} from '@expo-google-fonts/lexend';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { DataProvider } from './src/context/DataContext';
-import { colors } from './src/theme/colors';
+import { EmergencyProvider } from './src/context/EmergencyContext';
+import { colors, fonts } from './src/theme/colors';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Fraunces_600SemiBold,
-    Fraunces_700Bold,
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_700Bold,
+    Lexend_400Regular,
+    Lexend_500Medium,
+    Lexend_600SemiBold,
+    Lexend_700Bold,
   });
   const [ready, setReady] = useState(false);
 
@@ -43,7 +40,9 @@ export default function App() {
     <SafeAreaProvider>
       <StatusBar style="light" />
       <DataProvider>
-        <RootNavigator />
+        <EmergencyProvider>
+          <RootNavigator />
+        </EmergencyProvider>
       </DataProvider>
     </SafeAreaProvider>
   );
@@ -57,9 +56,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bootBrand: {
-    fontSize: 36,
+    fontSize: 34,
     color: colors.mist,
-    fontWeight: '700',
-    letterSpacing: -1,
+    fontFamily: fonts.bold,
+    letterSpacing: -0.5,
   },
 });

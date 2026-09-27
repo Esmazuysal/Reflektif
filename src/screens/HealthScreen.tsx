@@ -6,6 +6,8 @@ import { colors, spacing, radius } from '../theme/colors';
 import { Chip, Metric, Panel, PrimaryButton, SectionTitle } from '../components/ui';
 import { Sparkline } from '../components/Sparkline';
 import { useData } from '../context/DataContext';
+import { useEmergency } from '../context/EmergencyContext';
+import { AlarmBanner } from '../components/AlarmBanner';
 
 export function HealthScreen() {
   const {
@@ -17,6 +19,7 @@ export function HealthScreen() {
     initHealthKit,
     refresh,
   } = useData();
+  const { simulateCriticalHeart } = useEmergency();
   const [syncing, setSyncing] = useState(false);
   const hr = health.heartRate;
 
@@ -91,7 +94,7 @@ export function HealthScreen() {
   if (!patient) {
     return (
       <View style={styles.root}>
-        <LinearGradient colors={['#0F2A2A', '#1A3330']} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={['#14181F', '#1A222C']} style={StyleSheet.absoluteFill} />
         <SafeAreaView style={styles.safe} edges={['top']}>
           <View style={styles.content}>
             <SectionTitle
@@ -107,7 +110,7 @@ export function HealthScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={['#0F2A2A', '#1A3330']}
+        colors={['#14181F', '#1A222C']}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -116,21 +119,23 @@ export function HealthScreen() {
           showsVerticalScrollIndicator={false}
         >
           <SectionTitle
-            title="Xiaomi Watch S4 Sağlık Takibi"
+            title="Sağlık takibi"
             subtitle={healthKitConnected
-              ? 'Apple Health üzerinden gerçek saat verileri okunuyor'
-              : 'Saat verilerinizi görmek için Apple Health bağlantısını kurun'
+              ? 'Apple Health üzerinden saat verileri'
+              : 'Nabız ve SpO₂ — kritik eşikte alarm tetiklenir'
             }
           />
 
+          <AlarmBanner />
+
           {/* Bağlantı Durum Kartı */}
-          <Panel style={{ marginBottom: spacing.md, backgroundColor: healthKitConnected ? '#0A3D2F' : isRealData ? '#0A3D2F' : '#3D2A0A' }}>
+          <Panel style={{ marginBottom: spacing.md, backgroundColor: healthKitConnected ? colors.surfaceElevated : isRealData ? colors.surfaceElevated : colors.bgSoft }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: 'Fraunces_600SemiBold', fontSize: 18, color: colors.mist }}>
-                  {healthKitConnected ? '🍎 Apple Health Bağlı' : '📱 Saat Veri Kaynağı'}
+                <Text style={{ fontFamily: 'Lexend_600SemiBold', fontSize: 18, color: colors.mist }}>
+                  {healthKitConnected ? 'Apple Health bağlı' : 'Saat veri kaynağı'}
                 </Text>
-                <Text style={{ fontFamily: 'DMSans_400Regular', fontSize: 12, color: colors.mistMuted, marginTop: 2 }}>
+                <Text style={{ fontFamily: 'Lexend_400Regular', fontSize: 12, color: colors.mistMuted, marginTop: 2 }}>
                   {healthKitConnected
                     ? 'Xiaomi Watch S4 → Mi Fitness → Apple Health → Reflektif'
                     : 'Bağlantı bekleniyor...'}
@@ -147,37 +152,30 @@ export function HealthScreen() {
               <Chip label={`Güncelleme: ${health.lastSyncAt ? new Date(health.lastSyncAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--'}`} />
             </View>
 
-            {/* Veri Akışı Bilgilendirme */}
-            <View style={{ marginTop: spacing.sm, padding: 12, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 8 }}>
-              <Text style={{ fontFamily: 'DMSans_500Medium', fontSize: 13, color: colors.mist }}>
-                {healthKitConnected ? '✅ Gerçek Veri Akışı Aktif:' : '📋 Veri Akışı Kurulumu:'}
-              </Text>
-              <Text style={{ fontFamily: 'DMSans_400Regular', fontSize: 12, color: colors.mistMuted, marginTop: 4, lineHeight: 18 }}>
-                {healthKitConnected
-                  ? `1. Xiaomi Watch S4 nabzınızı ölçüyor\n2. Mi Fitness uygulaması Apple Health'e aktarıyor\n3. Reflektif her 10 saniyede Apple Health'ten okuyor\n4. Tüm veriler otomatik güncelleniyor ✨`
-                  : Platform.OS === 'ios'
-                    ? `1. Aşağıdaki "Apple Health Bağla" butonuna basın\n2. HealthKit izin ekranında tüm verilere izin verin\n3. Mi Fitness'ta Apple Health senkronizasyonunun açık olduğundan emin olun`
-                    : `iOS cihazda çalıştırmanız gerekiyor.\nApple Health entegrasyonu yalnızca iPhone'da çalışır.`
-                }
-              </Text>
-            </View>
-
             <View style={{ flexDirection: 'row', gap: 10, marginTop: spacing.md }}>
               {Platform.OS === 'ios' && !healthKitConnected && (
                 <View style={{ flex: 1 }}>
                   <PrimaryButton
-                    label={syncing ? 'Bağlanıyor...' : '🍎 Apple Health Bağla'}
+                    label={syncing ? 'Bağlanıyor...' : 'Apple Health bağla'}
                     onPress={handleConnectHealthKit}
                   />
                 </View>
               )}
               <View style={{ flex: 1 }}>
                 <PrimaryButton
-                  label={syncing ? 'Güncelleniyor...' : '🔄 Şimdi Güncelle'}
+                  label={syncing ? 'Güncelleniyor...' : 'Şimdi güncelle'}
                   onPress={handleSyncWatch}
                 />
               </View>
             </View>
+            <PrimaryButton
+              label="Kritik nabız alarmını test et"
+              onPress={async () => {
+                await simulateCriticalHeart();
+                await refresh();
+              }}
+              style={{ marginTop: spacing.sm, backgroundColor: colors.danger }}
+            />
           </Panel>
 
           {/* Anlık Nabız */}
@@ -280,7 +278,7 @@ const styles = StyleSheet.create({
   },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: spacing.sm },
   bigLabel: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     color: colors.textMuted,
   },
@@ -291,19 +289,19 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   bigValue: {
-    fontFamily: 'Fraunces_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 56,
     color: colors.heart,
     letterSpacing: -2,
   },
   bigUnit: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 18,
     color: colors.textMuted,
   },
   status: {
     marginTop: 4,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 14,
     color: colors.success,
   },
@@ -314,13 +312,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   sampleTime: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 10,
     color: colors.textMuted,
   },
   empty: {
     marginTop: spacing.md,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     lineHeight: 20,
     color: colors.textMuted,

@@ -13,11 +13,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, radius } from '../theme/colors';
 import { Chip, Metric, Panel, PrimaryButton, SectionTitle } from '../components/ui';
 import { Sparkline } from '../components/Sparkline';
+import { AlarmBanner } from '../components/AlarmBanner';
 import { useData } from '../context/DataContext';
+import { useEmergency } from '../context/EmergencyContext';
 
 export function HomeScreen({ navigation }: { navigation: any }) {
   const { patient, health, loading, error, apiOnline, refresh, createPatient } =
     useData();
+  const { openCount } = useEmergency();
   const fade = useRef(new Animated.Value(0)).current;
   const [name, setName] = useState('');
   const [caregiver, setCaregiver] = useState('');
@@ -55,7 +58,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={['#0F2A2A', '#163F3C', '#1A3330']}
+        colors={['#14181F', '#1A222C', '#1C2830']}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -67,8 +70,10 @@ export function HomeScreen({ navigation }: { navigation: any }) {
           <Animated.View style={{ opacity: fade }}>
             <Text style={styles.brand}>Reflektif</Text>
             <Text style={styles.tagline}>
-              Alzheimer bakımında güvenlik, sağlık ve zihinsel destek
+              Güvenlik, sağlık takibi ve bilişsel destek
             </Text>
+
+            <AlarmBanner />
 
             {!apiOnline ? (
               <Panel>
@@ -123,9 +128,13 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                     </View>
                     <Chip
                       label={
-                        patient.safeZone?.inSafeZone ? 'Güvende' : 'Uyarı'
+                        openCount > 0
+                          ? `${openCount} alarm`
+                          : patient.safeZone?.inSafeZone
+                            ? 'Güvende'
+                            : 'Uyarı'
                       }
-                      active={!!patient.safeZone?.inSafeZone}
+                      active={openCount === 0 && !!patient.safeZone?.inSafeZone}
                     />
                   </View>
                   <Text style={styles.deviceLine}>
@@ -165,12 +174,7 @@ export function HomeScreen({ navigation }: { navigation: any }) {
                         samples={health.heartRate.samples.map((s) => s.bpm)}
                       />
                     </View>
-                  ) : (
-                    <Text style={styles.emptyHealth}>
-                      Henüz saat verisi yok. Sağlık sekmesinden örnek veri
-                      ekleyebilirsiniz.
-                    </Text>
-                  )}
+                  ) : null}
                 </Panel>
 
                 <View style={styles.quickRow}>
@@ -217,19 +221,19 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   brand: {
-    fontFamily: 'Fraunces_700Bold',
-    fontSize: 42,
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 36,
     color: colors.mist,
-    letterSpacing: -1.2,
+    letterSpacing: -0.8,
   },
   tagline: {
     marginTop: 6,
     marginBottom: spacing.lg,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 15,
     lineHeight: 22,
     color: colors.mistMuted,
-    maxWidth: 320,
+    maxWidth: 300,
   },
   heroPanel: { backgroundColor: colors.surfaceElevated },
   heroTop: {
@@ -238,19 +242,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   patientLabel: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.textMuted,
   },
   patientName: {
     marginTop: 2,
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 24,
     color: colors.text,
   },
   deviceLine: {
     marginTop: spacing.sm,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.accent,
   },
@@ -262,25 +266,25 @@ const styles = StyleSheet.create({
   },
   quickCard: { flex: 1 },
   quickLabel: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.textMuted,
   },
   quickValue: {
     marginTop: 4,
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 26,
     color: colors.text,
   },
   quickHint: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.mistMuted,
   },
   fieldLabel: {
     marginTop: spacing.sm,
     marginBottom: 6,
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 12,
     color: colors.textMuted,
   },
@@ -292,25 +296,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     color: colors.text,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 15,
   },
   warnTitle: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 20,
     color: colors.warning,
   },
   warnBody: {
     marginTop: 8,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 14,
     lineHeight: 21,
     color: colors.mistMuted,
-  },
-  emptyHealth: {
-    marginTop: spacing.md,
-    fontFamily: 'DMSans_400Regular',
-    fontSize: 13,
-    color: colors.textMuted,
   },
 });

@@ -157,19 +157,19 @@ const styles = StyleSheet.create({
   },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
   badgeText: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 12,
     color: colors.mist,
   },
   meta: { marginTop: spacing.sm },
   metaTitle: {
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 15,
     color: colors.text,
   },
   metaSub: {
     marginTop: 2,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     color: colors.textMuted,
   },

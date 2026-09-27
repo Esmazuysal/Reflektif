@@ -1,5 +1,6 @@
 import { API_BASE_URL } from './config';
 import type {
+  AlarmEvent,
   Medication,
   PatientProfile,
   WatchHealthSnapshot,
@@ -25,6 +26,20 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(message);
   }
   return data as T;
+}
+
+function normalizeHealth(data: any): WatchHealthSnapshot {
+  const h = data?.health ?? data;
+  return {
+    ...h,
+    heartRate: {
+      ...h.heartRate,
+      samples: (h.heartRate?.samples ?? []).map((s: any) => ({
+        bpm: s.bpm ?? s.Bpm,
+        recordedAt: s.recordedAt ?? s.RecordedAt,
+      })),
+    },
+  };
 }
 
 export const api = {
@@ -108,9 +123,48 @@ export const api = {
   getLatestHealth: (patientId: string) =>
     request<WatchHealthSnapshot>(`/api/patients/${patientId}/health/latest`),
 
-  postHealth: (patientId: string, body: Record<string, unknown>) =>
-    request<WatchHealthSnapshot>(`/api/patients/${patientId}/health`, {
+  postHealth: async (patientId: string, body: Record<string, unknown>) => {
+    const data = await request<any>(`/api/patients/${patientId}/health`, {
       method: 'POST',
       body: JSON.stringify(body),
+    });
+    return {
+      health: normalizeHealth(data),
+      alarms: (data?.alarms ?? []) as AlarmEvent[],
+    };
+  },
+
+  updateSafeZone: (
+    patientId: string,
+    body: {
+      name: string;
+      centerLat: number;
+      centerLng: number;
+      radiusMeters: number;
+      lastAddress?: string;
+      lastLat?: number;
+      lastLng?: number;
+      inSafeZone: boolean;
+    },
+  ) =>
+    request<{ zone: any; alarm: AlarmEvent | null }>(
+      `/api/patients/${patientId}/safe-zone`,
+      { method: 'PUT', body: JSON.stringify(body) },
+    ),
+
+  getAlarms: (patientId: string, onlyOpen = true) =>
+    request<AlarmEvent[]>(
+      `/api/patients/${patientId}/alarms?onlyOpen=${onlyOpen}`,
+    ),
+
+  ackAlarm: (patientId: string, alarmId: string) =>
+    request<AlarmEvent>(`/api/patients/${patientId}/alarms/${alarmId}/ack`, {
+      method: 'POST',
     }),
+
+  testSafeZoneExit: (patientId: string) =>
+    request<{ zone: any; alarm: AlarmEvent | null }>(
+      `/api/patients/${patientId}/alarms/test-safe-zone`,
+      { method: 'POST' },
+    ),
 };

@@ -85,18 +85,18 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   gameTitle: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 20,
     color: colors.text,
   },
   gameSub: {
     marginTop: 2,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     color: colors.textMuted,
   },
   duration: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 12,
     color: colors.accent,
   },

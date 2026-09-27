@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     paddingTop: 6,
   },
   tabLabel: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 11,
   },
   icon: {

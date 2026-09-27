@@ -10,6 +10,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Medication> Medications => Set<Medication>();
     public DbSet<SafeZone> SafeZones => Set<SafeZone>();
     public DbSet<HealthReading> HealthReadings => Set<HealthReading>();
+    public DbSet<AlarmEvent> AlarmEvents => Set<AlarmEvent>();
+    public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +37,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasOne(h => h.Patient)
             .WithMany(p => p.HealthReadings)
             .HasForeignKey(h => h.PatientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AlarmEvent>()
+            .HasOne(a => a.Patient)
+            .WithMany(p => p.Alarms)
+            .HasForeignKey(a => a.PatientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<NotificationLog>()
+            .HasOne(n => n.AlarmEvent)
+            .WithMany()
+            .HasForeignKey(n => n.AlarmEventId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

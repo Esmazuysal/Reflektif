@@ -131,14 +131,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   sectionTitle: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 22,
     color: colors.text,
     letterSpacing: -0.3,
   },
   sectionSub: {
     marginTop: 4,
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 14,
     color: colors.textMuted,
     lineHeight: 20,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     minWidth: 90,
   },
   metricLabel: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.textMuted,
     marginBottom: 4,
@@ -159,12 +159,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   metricValue: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 28,
     letterSpacing: -0.5,
   },
   metricUnit: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 13,
     color: colors.textMuted,
   },
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
   },
   chipText: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 12,
     color: colors.mistMuted,
   },
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnText: {
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 15,
     color: colors.bg,
     letterSpacing: 0.2,

@@ -55,6 +55,18 @@ export interface Medication {
   takenToday: boolean[];
 }
 
+export interface AlarmEvent {
+  id: string;
+  patientId: string;
+  type: 'health_critical' | 'safe_zone_exit' | string;
+  severity: 'info' | 'warning' | 'critical' | string;
+  title: string;
+  message: string;
+  payloadJson?: string;
+  acknowledged: boolean;
+  createdAt: string;
+}
+
 export interface PatientProfile {
   id: string;
   fullName: string;

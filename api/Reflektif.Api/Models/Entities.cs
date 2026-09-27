@@ -14,6 +14,38 @@ public class Patient
     public List<EmergencyContact> Contacts { get; set; } = [];
     public List<Medication> Medications { get; set; } = [];
     public List<HealthReading> HealthReadings { get; set; } = [];
+    public List<AlarmEvent> Alarms { get; set; } = [];
+}
+
+/// <summary>Kritik sağlık veya güvenli alan ihlali kaydı.</summary>
+public class AlarmEvent
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid PatientId { get; set; }
+    public Patient? Patient { get; set; }
+    /// <summary>health_critical | safe_zone_exit</summary>
+    public string Type { get; set; } = string.Empty;
+    /// <summary>info | warning | critical</summary>
+    public string Severity { get; set; } = "warning";
+    public string Title { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public string PayloadJson { get; set; } = "{}";
+    public bool Acknowledged { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+/// <summary>Yakınlara giden uyarı denemesi (SMS/push sonraki adım).</summary>
+public class NotificationLog
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid AlarmEventId { get; set; }
+    public AlarmEvent? AlarmEvent { get; set; }
+    public Guid? ContactId { get; set; }
+    public string Channel { get; set; } = "local_push";
+    public string Target { get; set; } = string.Empty;
+    public string Status { get; set; } = "queued";
+    public string Detail { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
 public class EmergencyContact

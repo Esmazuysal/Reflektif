@@ -142,7 +142,7 @@ export function WordMemoryGame() {
 
 const styles = StyleSheet.create({
   hint: {
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 14,
     color: colors.textMuted,
     marginBottom: spacing.md,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
   },
   wordText: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 20,
     color: colors.bg,
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
   },
   optionText: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'Lexend_500Medium',
     fontSize: 16,
     color: colors.mist,
   },
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     color: colors.bg,
   },
   result: {
-    fontFamily: 'Fraunces_600SemiBold',
+    fontFamily: 'Lexend_600SemiBold',
     fontSize: 22,
     color: colors.success,
     marginBottom: spacing.sm,

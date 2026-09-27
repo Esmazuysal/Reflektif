@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Reflektif.Api.Data;
 using Reflektif.Api.Dtos;
 using Reflektif.Api.Models;
+using Reflektif.Api.Services;
 
 namespace Reflektif.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PatientsController(AppDbContext db) : ControllerBase
+public class PatientsController(AppDbContext db, AlarmEvaluator alarms) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetAll()
@@ -208,6 +209,7 @@ public class PatientsController(AppDbContext db) : ControllerBase
             db.SafeZones.Add(p.SafeZone);
         }
 
+        var wasInZone = p.SafeZone.InSafeZone;
         p.SafeZone.Name = dto.Name.Trim();
         p.SafeZone.CenterLat = dto.CenterLat;
         p.SafeZone.CenterLng = dto.CenterLng;
@@ -218,7 +220,58 @@ public class PatientsController(AppDbContext db) : ControllerBase
         p.SafeZone.InSafeZone = dto.InSafeZone;
         p.SafeZone.LocationUpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
-        return Ok(MapSafeZone(p.SafeZone));
+
+        var alarm = await alarms.EvaluateSafeZoneAsync(id, wasInZone, dto.InSafeZone, p.SafeZone);
+
+        return Ok(new
+        {
+            zone = MapSafeZone(p.SafeZone),
+            alarm = alarm is null ? null : MapAlarm(alarm),
+        });
+    }
+
+    [HttpGet("{id:guid}/alarms")]
+    public async Task<ActionResult<object>> ListAlarms(Guid id, [FromQuery] bool onlyOpen = true)
+    {
+        var exists = await db.Patients.AnyAsync(p => p.Id == id);
+        if (!exists) return NotFound();
+
+        var q = db.AlarmEvents.Where(a => a.PatientId == id);
+        if (onlyOpen) q = q.Where(a => !a.Acknowledged);
+
+        var list = await q.OrderByDescending(a => a.CreatedAt).Take(50).ToListAsync();
+        return Ok(list.Select(MapAlarm));
+    }
+
+    [HttpPost("{id:guid}/alarms/{alarmId:guid}/ack")]
+    public async Task<ActionResult<object>> AckAlarm(Guid id, Guid alarmId)
+    {
+        var alarm = await db.AlarmEvents.FirstOrDefaultAsync(a => a.Id == alarmId && a.PatientId == id);
+        if (alarm is null) return NotFound();
+        alarm.Acknowledged = true;
+        await db.SaveChangesAsync();
+        return Ok(MapAlarm(alarm));
+    }
+
+    [HttpPost("{id:guid}/alarms/test-safe-zone")]
+    public async Task<ActionResult<object>> TestSafeZoneExit(Guid id)
+    {
+        var p = await db.Patients.Include(x => x.SafeZone).FirstOrDefaultAsync(x => x.Id == id);
+        if (p is null) return NotFound();
+        if (p.SafeZone is null)
+        {
+            p.SafeZone = new SafeZone { PatientId = id, Name = "Ev Güvenli Alanı" };
+            db.SafeZones.Add(p.SafeZone);
+        }
+        var wasIn = p.SafeZone.InSafeZone;
+        p.SafeZone.InSafeZone = false;
+        p.SafeZone.LastAddress = p.SafeZone.LastAddress is { Length: > 0 }
+            ? p.SafeZone.LastAddress
+            : "Test — alan dışı";
+        p.SafeZone.LocationUpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        var alarm = await alarms.EvaluateSafeZoneAsync(id, wasIn || true, false, p.SafeZone);
+        return Ok(new { zone = MapSafeZone(p.SafeZone), alarm = alarm is null ? null : MapAlarm(alarm) });
     }
 
     [HttpGet("{id:guid}/health/latest")]
@@ -244,6 +297,21 @@ public class PatientsController(AppDbContext db) : ControllerBase
 
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         var samplesJson = JsonSerializer.Serialize(dto.Samples ?? [], options);
+
+        // Otomatik durum etiketi
+        var hrStatus = dto.HeartRateStatus;
+        if (string.IsNullOrWhiteSpace(hrStatus) || hrStatus == "normal")
+        {
+            if (dto.HeartRateCurrent >= AlarmThresholds.HeartRateHigh) hrStatus = "high";
+            else if (dto.HeartRateCurrent > 0 && dto.HeartRateCurrent <= AlarmThresholds.HeartRateLow)
+                hrStatus = "low";
+            else hrStatus = "normal";
+        }
+
+        var spo2Status = dto.Spo2Status;
+        if (dto.Spo2Percent > 0 && dto.Spo2Percent < AlarmThresholds.Spo2Low)
+            spo2Status = "low";
+
         var reading = new HealthReading
         {
             PatientId = id,
@@ -255,14 +323,14 @@ public class PatientsController(AppDbContext db) : ControllerBase
             HeartRateResting = dto.HeartRateResting,
             HeartRateMin = dto.HeartRateMin,
             HeartRateMax = dto.HeartRateMax,
-            HeartRateStatus = dto.HeartRateStatus,
+            HeartRateStatus = hrStatus,
             HeartRateSamplesJson = samplesJson,
             StepsToday = dto.StepsToday,
             StepsGoal = dto.StepsGoal,
             SleepHours = dto.SleepHours,
             SleepQuality = dto.SleepQuality,
             Spo2Percent = dto.Spo2Percent,
-            Spo2Status = dto.Spo2Status,
+            Spo2Status = spo2Status,
             Calories = dto.Calories,
             StressLevel = dto.StressLevel,
             StressLabel = dto.StressLabel,
@@ -270,8 +338,28 @@ public class PatientsController(AppDbContext db) : ControllerBase
         };
         db.HealthReadings.Add(reading);
         await db.SaveChangesAsync();
-        return Ok(MapHealth(reading));
+
+        var raised = await alarms.EvaluateHealthAsync(id, reading);
+
+        return Ok(new
+        {
+            health = MapHealth(reading),
+            alarms = raised.Select(MapAlarm),
+        });
     }
+
+    private static object MapAlarm(AlarmEvent a) => new
+    {
+        a.Id,
+        a.PatientId,
+        a.Type,
+        a.Severity,
+        a.Title,
+        a.Message,
+        a.PayloadJson,
+        a.Acknowledged,
+        a.CreatedAt,
+    };
 
     private static object MapPatient(Patient p) => new
     {

@@ -143,14 +143,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   score: {
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 15,
     color: colors.text,
   },
   hint: {
     flex: 1,
     textAlign: 'right',
-    fontFamily: 'DMSans_400Regular',
+    fontFamily: 'Lexend_400Regular',
     fontSize: 14,
     color: colors.textMuted,
   },
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     borderColor: colors.mist,
   },
   padLabel: {
-    fontFamily: 'DMSans_700Bold',
+    fontFamily: 'Lexend_700Bold',
     fontSize: 16,
     color: colors.bg,
   },
