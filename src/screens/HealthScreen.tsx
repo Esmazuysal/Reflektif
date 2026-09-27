@@ -84,11 +84,11 @@ export function HealthScreen() {
 
   // Veri kaynağı etiketi
   const getSourceLabel = () => {
-    if (source === 'apple_healthkit') return '🍎 Apple Health (Gerçek Veri)';
-    if (source === 'xiaomi_cloud_sync') return '☁️ Xiaomi Cloud';
-    if (source === 'mi_fitness_export') return '📱 Mi Fitness Export';
-    if (source === 'xiaomi_watch_s4') return '⌚ Xiaomi Watch S4';
-    return '⚠️ Veri bekleniyor...';
+    if (source === 'apple_healthkit') return 'Apple Health';
+    if (source === 'xiaomi_cloud_sync') return 'Xiaomi Cloud';
+    if (source === 'mi_fitness_export') return 'Mi Fitness';
+    if (source === 'xiaomi_watch_s4') return 'Watch S4';
+    return 'Beklemede';
   };
 
   if (!patient) {
@@ -128,21 +128,16 @@ export function HealthScreen() {
 
           <AlarmBanner />
 
-          {/* Bağlantı Durum Kartı */}
-          <Panel style={{ marginBottom: spacing.md, backgroundColor: healthKitConnected ? colors.surfaceElevated : isRealData ? colors.surfaceElevated : colors.bgSoft }}>
+          {/* Bağlantı */}
+          <Panel style={{ marginBottom: spacing.md }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontFamily: 'Lexend_600SemiBold', fontSize: 18, color: colors.mist }}>
-                  {healthKitConnected ? 'Apple Health bağlı' : 'Saat veri kaynağı'}
-                </Text>
-                <Text style={{ fontFamily: 'Lexend_400Regular', fontSize: 12, color: colors.mistMuted, marginTop: 2 }}>
-                  {healthKitConnected
-                    ? 'Xiaomi Watch S4 → Mi Fitness → Apple Health → Reflektif'
-                    : 'Bağlantı bekleniyor...'}
+                  {healthKitConnected ? 'Apple Health bağlı' : 'Saat bağlantısı'}
                 </Text>
               </View>
               <Chip
-                label={healthKitConnected ? '🟢 Bağlı' : isRealData ? '🟡 Backend' : '⚪ Beklemede'}
+                label={healthKitConnected ? 'Bağlı' : isRealData ? 'Backend' : 'Beklemede'}
                 active={healthKitConnected || isRealData}
               />
             </View>
@@ -211,13 +206,7 @@ export function HealthScreen() {
                   ))}
                 </View>
               </>
-            ) : (
-              <Text style={styles.empty}>
-                {healthKitConnected
-                  ? 'Apple Health\'te henüz bugün için nabız verisi yok. Saatinizin Mi Fitness ile senkronize olduğundan emin olun.'
-                  : 'Henüz saat verisi aktarılmadı. Apple Health bağlantısını kurun veya Mi Fitness\'ı senkronize edin.'}
-              </Text>
-            )}
+            ) : null}
           </Panel>
 
           {/* Metrik Grid */}
