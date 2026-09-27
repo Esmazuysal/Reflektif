@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Reflektif",
+    "slug": "reflektif",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A3A3A"
+    },
+    "plugins": [
+      "expo-dev-client"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kocaeli.reflektif",
+      "entitlements": {
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.healthkit.access": [
+          "health-records"
+        ]
+      },
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "Reflektif, Xiaomi Watch S4 saatinizin Mi Fitness aracılığıyla Apple Health'e aktardığı nabız, adım, uyku ve SpO₂ verilerini okumak için erişim ister.",
+        "NSHealthUpdateUsageDescription": "Reflektif, sağlık verilerinizi kaydetmek için Apple Health'e yazma izni ister.",
+        "NSBluetoothAlwaysUsageDescription": "Reflektif, Xiaomi Watch S4 akıllı saatten anlık nabız ve sağlık verilerini toplamak için Bluetooth erişimine ihtiyaç duyar.",
+        "NSBluetoothPeripheralUsageDescription": "Reflektif, akıllı saat ile arka planda bağlantı kurmak için Bluetooth kullanır.",
+        "UIBackgroundModes": ["bluetooth-central", "fetch"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1A3A3A"
+      },
+      "package": "com.kocaeli.reflektif",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.WAKE_LOCK"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+using Microsoft.EntityFrameworkCore;
+using Reflektif.Api.Data;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseUrls("http://0.0.0.0:5196");
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Default")
+                      ?? "Data Source=reflektif.db"));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Mobile", policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors("Mobile");
+// Mobil geliştirmede HTTP kullanıyoruz; HTTPS yönlendirmesini kapatıyoruz.
+app.MapControllers();
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok", app = "Reflektif API" }));
+
+app.Run();
